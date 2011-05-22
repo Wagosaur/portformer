@@ -10,6 +10,10 @@ package com.MakeShiftUniverse.Portformer
 	{
 		[Embed(source = '../../../../Art/sprPlayer.png')]public var player:Class;
 		
+		//sounds
+		[Embed(source = '../../../../Sounds/Explosion.mp3')] public var sndDeath:Class;
+		[Embed(source = '../../../../Sounds/Jump.mp3')]public var sndJump:Class;
+		
 		protected static const RUN_SPEED:int = 80;
 		protected static const GRAVITY:int =420;
 		protected static const JUMP_SPEED:int = 200;
@@ -17,8 +21,11 @@ package com.MakeShiftUniverse.Portformer
 		public var onground:Boolean = false;
 		
 		public var doublejump:Boolean = false;
+		public var dead:Boolean = false;
+		
+		protected var gibs:FlxEmitter;
 
-		public function Player(x:int,y:int):void
+		public function Player(x:int,y:int,Gibs:FlxEmitter):void
 		{
 			super(x, y);
 			loadGraphic(player, true, true, 16,16);
@@ -29,6 +36,7 @@ package com.MakeShiftUniverse.Portformer
             acceleration.y = GRAVITY; // Always try to push helmutguy in the direction of gravity
             maxVelocity.x = RUN_SPEED;
             maxVelocity.y = JUMP_SPEED;
+			gibs = Gibs;
 		}
 		
 		override public function update():void 
@@ -60,14 +68,21 @@ package com.MakeShiftUniverse.Portformer
 				{
 					velocity.y = -JUMP_SPEED;
 					jumped = true;
+					FlxG.play(sndJump, 0.5, false);
 				}
 				
 				if (!onground &&!jumped && doublejump)
 				{
 					velocity.y = -JUMP_SPEED;
 					doublejump = false;
+					FlxG.play(sndJump, 0.5, false);
 					
 				}
+			}
+			if (FlxG.keys.K)
+			{
+				this.kill();
+				this.dead = true;
 			}
 			
 			//if (FlxG.getPlugin(FlxControl) == null)
@@ -91,6 +106,19 @@ package com.MakeShiftUniverse.Portformer
 				play("idle");
 			}
 			super.update();
+		}
+		override public function kill():void 
+		{
+			if (dead) { return; }
+			
+			super.kill();
+			
+			if (gibs != null)
+			{
+				FlxG.play(sndDeath, .5, false);
+				gibs.at(this);
+				gibs.start(true, 3 );
+			}
 		}
 		
 	}
