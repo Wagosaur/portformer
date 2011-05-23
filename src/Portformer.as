@@ -34,6 +34,10 @@ package
 
 TODO:preloader
 TODO:Find a name for player, art him up a bunch
+TODO:change controller
+TODO:fix camera
+TODO:add walljump
+TODO:make abilitys pickups
 
 
 
